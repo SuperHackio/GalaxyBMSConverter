@@ -1,6 +1,7 @@
 # GalaxyBMSConverter
 Convert MIDI files into Galaxy BMS files!
 
+![image](https://github.com/user-attachments/assets/f8e2b291-8be0-4c44-a30e-bfbb0177aad1)
 
 
 ## Requirements
@@ -28,3 +29,34 @@ This program allows you to convert MIDI files into BMS files. Follow these simpl
 
 ### Conversion Warnings
 Once conversion is complete, it will give you a list of warnings, if any occured during conversion.
+
+## Importing into the game
+Once you have your working BMS file (it will be in .szs format if it's small enough to fit into the Sequence memory in-game), you can use [WiiExplorer](https://github.com/SuperHackio/WiiExplorer) to edit `AudioRes/Seqs/JaiSeq.arc`. Replace a song of your choosing (using ALT+R on the file you want to replace), then go to the File Properties of your file, and click the "Auto" button to set the compression flags correctly. Save the archive and assuming you did it correctly, it will work in-game.
+
+## Limitations
+- There is a maximum uncompressed sequence data size of 56kb in both Galaxy games. A BMS file cannot exceed this limit.
+- The program only supports one set of percussion at this time. All channels that use a percussion instrument will use this one set.
+- MIDI Gates are not supported. All midi notes must have both an ON and OFF.
+- Decimal BPM (120.5 for example) is not supported by the BMS file format directly, as the BPM is stored as an integer value.
+- The Maximum BPM is 255
+- The Maximum MIDI channel count is 16 (15 if you plan on having a timing track in your BMS). Note that this does not mean you can't have more than 16 MIDI *tracks* (two midi tracks that use channel 8 will be merged into one BMS Track during conversion)
+- BMS has a concept called Subroutines, which is not supported by the converter at this time.
+- All MIDI Control Changes (CCs) are always written, so having a lot can result in larger files. An option for this to be compressed hasn't been found in the game code yet as far as I know.
+- Advanced BMS Logic (such as register & variable management) are not supported.
+
+## Advanced Features
+- Timing Track & CIT Generation
+  - This program allows the generation of Timing Tracks, which are BMS files that only contain information on where the song beats are, as well as Chord Selection from a CIT.
+  - This program is capable of generating a Timing Track without a MIDI file being present. Simply type `_` as the MIDI filename, and you will be able to generate a BMS that is just a timing track and chord selection.
+- Audio Effects (Pitch Bend & MIDI Control Changes)
+  - Pitch bending is supported through the MIDI standard for pitch changes
+  - The converter supports the following MIDI effects (All of which only apply to the BMS Track that they are actually in)
+    - MIDI Control Change 1 (*CC1*) will set the **Vibrato Depth**
+    - MIDI Control Change 2 (*CC2*) will set the **Vibrato Rate**
+    - MIDI Control Change 7 (*CC7*) will set the **Master Volume**
+    - MIDI Control Change 11 (*CC11*) will set the **Expression Volume**
+    - MIDI Control Change 10 (*CC10*) will set the **Panning**
+    - MIDI Control Change 91 (*CC91*) will set the **Reverb**
+    - MIDI Control Change 92 (*CC92*) will set the **Volume Tremolo Strength**
+    - MIDI Control Change 93 (*CC93*) will set the **Volume Tremolo Rate**
+    - MIDI Control Change 94 (*CC94*) allows for **Transposition**
