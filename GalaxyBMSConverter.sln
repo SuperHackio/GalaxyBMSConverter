@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GalaxyBMSConverter", "GalaxyBMSConverter\GalaxyBMSConverter.csproj", "{4F85F265-3156-4EA1-ABC7-1BA5E22944EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hack.io.MIDI", "Hack.io.MIDI\Hack.io.MIDI.csproj", "{ECE9108B-3D7A-48C2-9F1E-18910ED39B20}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hack.io.BMS", "Hack.io.BMS\Hack.io.BMS.csproj", "{C307CB9B-EB80-4ACC-9D30-009EAD921D79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hack.io", "..\Hack.io\Hack.io\Hack.io.csproj", "{DD40A022-FD28-4568-9204-40D700D87481}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hack.io.YAZ0", "..\Hack.io\Hack.io.YAZ0\Hack.io.YAZ0.csproj", "{08037926-8E27-4303-9509-DCA1DE92B512}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hack.io.CIT", "..\Hack.io\Hack.io.CIT\Hack.io.CIT.csproj", "{1679BE63-2E8D-4BB6-9BA9-7F6491338151}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F85F265-3156-4EA1-ABC7-1BA5E22944EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F85F265-3156-4EA1-ABC7-1BA5E22944EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F85F265-3156-4EA1-ABC7-1BA5E22944EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F85F265-3156-4EA1-ABC7-1BA5E22944EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE9108B-3D7A-48C2-9F1E-18910ED39B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE9108B-3D7A-48C2-9F1E-18910ED39B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE9108B-3D7A-48C2-9F1E-18910ED39B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE9108B-3D7A-48C2-9F1E-18910ED39B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C307CB9B-EB80-4ACC-9D30-009EAD921D79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C307CB9B-EB80-4ACC-9D30-009EAD921D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C307CB9B-EB80-4ACC-9D30-009EAD921D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C307CB9B-EB80-4ACC-9D30-009EAD921D79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD40A022-FD28-4568-9204-40D700D87481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD40A022-FD28-4568-9204-40D700D87481}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD40A022-FD28-4568-9204-40D700D87481}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD40A022-FD28-4568-9204-40D700D87481}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08037926-8E27-4303-9509-DCA1DE92B512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08037926-8E27-4303-9509-DCA1DE92B512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08037926-8E27-4303-9509-DCA1DE92B512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08037926-8E27-4303-9509-DCA1DE92B512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1679BE63-2E8D-4BB6-9BA9-7F6491338151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1679BE63-2E8D-4BB6-9BA9-7F6491338151}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1679BE63-2E8D-4BB6-9BA9-7F6491338151}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1679BE63-2E8D-4BB6-9BA9-7F6491338151}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6C03CBBE-0AE0-48E3-AF35-20BE90081EA2}
+	EndGlobalSection
+EndGlobal

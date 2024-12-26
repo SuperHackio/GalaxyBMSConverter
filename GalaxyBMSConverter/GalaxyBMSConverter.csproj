@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>BMSEditor.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="BMSEditor.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Hack.io\Hack.io.CIT\Hack.io.CIT.csproj" />
+    <ProjectReference Include="..\..\Hack.io\Hack.io.YAZ0\Hack.io.YAZ0.csproj" />
+    <ProjectReference Include="..\..\Hack.io\Hack.io\Hack.io.csproj" />
+    <ProjectReference Include="..\Hack.io.BMS\Hack.io.BMS.csproj" />
+    <ProjectReference Include="..\Hack.io.MIDI\Hack.io.MIDI.csproj" />
+  </ItemGroup>
+
+</Project>
