@@ -46,9 +46,16 @@ Once you have your working BMS file (it will be in .szs format if it's small eno
 - Advanced BMS Logic (such as register & variable management) are not supported.
 
 ## Advanced Features
-- Timing Track & CIT Generation
-  - This program allows the generation of Timing Tracks, which are BMS files that only contain information on where the song beats are, as well as Chord Selection from a CIT.
-  - This program is capable of generating a Timing Track without a MIDI file being present. Simply type `_` as the MIDI filename, and you will be able to generate a BMS that is just a timing track and chord selection.
+- Timing Track Generation
+  - This program allows the generation of Timing Tracks, which are BMS files that contain the following information:
+    - Song BPM
+    - Where the beats are in the song
+    - Chord selection
+  - If you want to generate a Timing Track without having a MIDI file, Simply type `_` as the MIDI filename, and a MIDI will not be used.
+    - If you do this, you must have the Timing Track selected with the dropdown, and also have at least one Chord entry at MIDI Tick 0 that has the song's BPM set.
+    - In this situation, all MIDI ticks are calculated with a PPQN of 120 (which is the standard for Galaxy)
+  - If you are using this for an AST file, ensure your AST file's loop points line up with the loop points in the BMS file
+- CIT Generation
   - TODO: Write how to use the Chords Editor
 - Audio Effects (Pitch Bend & MIDI Control Changes)
   - Pitch bending is supported through the MIDI standard for pitch changes
