@@ -17,7 +17,7 @@ This program allows you to convert MIDI files into BMS files. Follow these simpl
   - The MIDI file you want to convert must be a properly formatted MIDI.
 - \[Optional\] Choose a BMS Track to put your Timing Track & Chords into (Usually Track 0)
 - \[Optional\] Setup your Chords
-- Set the Loop Points for your MIDI (in clock pulses. This is relative to whatever the MIDI file has for it's PPQN)
+- Set the Loop Points for your MIDI (in clock pulses, also known as Ticks. This is relative to whatever the MIDI file has for it's PPQN)
   - Set both to 0 to have your MIDI not loop at all
   - Set both to -1 to repeat the entire MIDI
   - Try to align your loop points to a full Measure
@@ -29,7 +29,7 @@ This program allows you to convert MIDI files into BMS files. Follow these simpl
 - Click Convert!
 
 ### Conversion Warnings
-Once conversion is complete, it will give you a list of warnings, if any occured during conversion.
+Once conversion is complete, it will give you a list of warnings, if any occured during conversion.<br/>Depending on the error, you can possibly solve it by resaving the midi with a different editor.
 
 ## Importing into the game
 Once you have your working BMS file (it will be in .szs format if it's small enough to fit into the Sequence memory in-game), you can use [WiiExplorer](https://github.com/SuperHackio/WiiExplorer) to edit `AudioRes/Seqs/JaiSeq.arc`. Replace a song of your choosing (using ALT+R on the file you want to replace), then go to the File Properties of your file, and click the "Auto" button to set the compression flags correctly. Save the archive and assuming you did it correctly, it will work in-game.
@@ -56,8 +56,21 @@ Once you have your working BMS file (it will be in .szs format if it's small eno
     - In this situation, all MIDI ticks are calculated with a PPQN of 120 (which is the standard for Galaxy)
   - If you are using this for an AST file, ensure your AST file's loop points line up with the loop points in the BMS file
 - CIT Generation
-  - TODO: Write how to use the Chords Editor
-- Audio Effects (Pitch Bend & MIDI Control Changes)
+  - This program can generate Chord data in addition to a Timing Track. Use the Table in the program menu to add indication for the game to change to a chord.
+  - Chord changes can only occur on individual beats, not sub beats (in other words, only 4 times a measure for 4/4 time)
+  - You can declare a note by typing it's letter. `A`, `B`, `C`, `D`, `E`, `F`, or `G`.
+    - Make a note Sharp like this: `A#`.
+    - Make a note Flat like this: `Ab`.
+  - For each chord change:
+    - Set the Bass Note
+    - Set the Root note for the Chord (as the first note in the Chord Notes column)
+    - After, set the 3 Tone Notes (separated by spaces)
+    - Optionally add Additive Notes (also separated by spaces)
+  - In addition to changing chords, you can also change Scales. For each Scale Change:
+    - Add up to 12 notes (separated by spaces) inside the Scale Up (and/or Scale Down) columns.
+    - If you leave Scale Down blank, it will copy the value from Scale Up during conversion.
+- Playback Effects
+  - Tempo can change multiple times during playback though the MIDI standard for BPM.
   - Pitch bending is supported through the MIDI standard for pitch changes
   - The converter supports the following MIDI effects (All of which only apply to the BMS Track that they are actually in)
     - MIDI Control Change 1 (*CC1*) will set the **Vibrato Depth**
