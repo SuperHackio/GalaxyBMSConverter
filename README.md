@@ -3,6 +3,7 @@ Convert MIDI files into Galaxy BMS files!
 
 ![image](https://github.com/user-attachments/assets/f8e2b291-8be0-4c44-a30e-bfbb0177aad1)
 
+> *Notice: The Hack.io libraries that are in this repository will eventually be moved to the main Hack.io repository*
 
 ## Requirements
 - [.NET 8.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
@@ -48,6 +49,7 @@ Once you have your working BMS file (it will be in .szs format if it's small eno
 - Timing Track & CIT Generation
   - This program allows the generation of Timing Tracks, which are BMS files that only contain information on where the song beats are, as well as Chord Selection from a CIT.
   - This program is capable of generating a Timing Track without a MIDI file being present. Simply type `_` as the MIDI filename, and you will be able to generate a BMS that is just a timing track and chord selection.
+  - TODO: Write how to use the Chords Editor
 - Audio Effects (Pitch Bend & MIDI Control Changes)
   - Pitch bending is supported through the MIDI standard for pitch changes
   - The converter supports the following MIDI effects (All of which only apply to the BMS Track that they are actually in)
