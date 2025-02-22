@@ -953,7 +953,7 @@ public partial class MainForm : Form
             {
                 while (CurrentTime < Tick)
                 {
-                    WriteMeasure();
+                    WriteBeat();
 
                     if (!HasProcessedLoop && CurrentTime >= LoopStart)
                     {
@@ -971,14 +971,14 @@ public partial class MainForm : Form
             {
                 while (CurrentTime < LoopStart)
                 {
-                    WriteMeasure();
+                    WriteBeat();
                 }
                 TargetLoopOpcodeIndex = Dest.Count;
                 HasProcessedLoop = true;
             }
             while (CurrentTime < LoopEnd)
             {
-                WriteMeasure();
+                WriteBeat();
             }
 
             if (!NoLooping)
@@ -997,73 +997,65 @@ public partial class MainForm : Form
                 Dest.Add(new BMS.OpcodeSetProgram() { Value = (byte)ChordID });
             }
 
-            void WriteMeasure()
+            void WriteBeat()
             {
-                WriteBeat();
-                WriteBeat();
-                WriteBeat();
-                WriteBeat();
+                List<BMS.OpcodeBase>[] AllBeatTicks = new List<BMS.OpcodeBase>[PPQN];
+                int Voice1Num = 1;
+                int Voice2Num = 8;
+                int Voice3Num = 4;
+                int Voice4Num = 2;
 
-                void WriteBeat()
+                for (int i = 0; i < AllBeatTicks.Length; i++)
+                    AllBeatTicks[i] = [];
+
+                for (int x = 0; x < Voice1Num; x++)
                 {
-                    List<BMS.OpcodeBase>[] AllBeatTicks = new List<BMS.OpcodeBase>[PPQN];
-                    int Voice1Num = 1;
-                    int Voice2Num = 8;
-                    int Voice3Num = 4;
-                    int Voice4Num = 2;
-
-                    for (int i = 0; i < AllBeatTicks.Length; i++)
-                        AllBeatTicks[i] = [];
-
-                    for (int x = 0; x < Voice1Num; x++)
-                    {
-                        int idx = PPQN / Voice1Num;
-                        AllBeatTicks[idx * x].Add(CreateNoteOn(0x18, 1, (byte)(x == 0 ? 0x0E : 0x6E)));
-                        AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(1));
-                    }
-                    for (int x = 0; x < Voice2Num; x++)
-                    {
-                        int idx = PPQN / Voice2Num;
-                        AllBeatTicks[idx * x].Add(CreateNoteOn(0x19, 2, (byte)(x == 0 ? 0x22 : 0x6E)));
-                        AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(2));
-                    }
-                    for (int x = 0; x < Voice3Num; x++)
-                    {
-                        int idx = PPQN / Voice3Num;
-                        AllBeatTicks[idx * x].Add(CreateNoteOn(0x1B, 3, (byte)(x == 0 ? 0x1A : 0x6E)));
-                        AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(3));
-                    }
-                    for (int x = 0; x < Voice4Num; x++)
-                    {
-                        int idx = PPQN / Voice4Num;
-                        AllBeatTicks[idx * x].Add(CreateNoteOn(0x1E, 4, (byte)(x == 0 ? 0x12 : 0x6E)));
-                        AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(4));
-                    }
-
-                    int EmptyCounter = 0;
-                    foreach (var item in AllBeatTicks)
-                    {
-                        if (item.Count == 0)
-                        {
-                            EmptyCounter++;
-                            continue;
-                        }
-                        if (EmptyCounter > 0)
-                            CreateWaitOpcode(EmptyCounter);
-
-                        Dest.AddRange(item);
-                        if (EmptyCounter > 0)
-                            CreateWaitOpcode(2); //is it always 2?
-                        EmptyCounter = 0;
-                    }
-
-                    CurrentTime += PPQN;
+                    int idx = PPQN / Voice1Num;
+                    AllBeatTicks[idx * x].Add(CreateNoteOn(0x18, 1, (byte)(x == 0 ? 0x0E : 0x6E)));
+                    AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(1));
+                }
+                for (int x = 0; x < Voice2Num; x++)
+                {
+                    int idx = PPQN / Voice2Num;
+                    AllBeatTicks[idx * x].Add(CreateNoteOn(0x19, 2, (byte)(x == 0 ? 0x22 : 0x6E)));
+                    AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(2));
+                }
+                for (int x = 0; x < Voice3Num; x++)
+                {
+                    int idx = PPQN / Voice3Num;
+                    AllBeatTicks[idx * x].Add(CreateNoteOn(0x1B, 3, (byte)(x == 0 ? 0x1A : 0x6E)));
+                    AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(3));
+                }
+                for (int x = 0; x < Voice4Num; x++)
+                {
+                    int idx = PPQN / Voice4Num;
+                    AllBeatTicks[idx * x].Add(CreateNoteOn(0x1E, 4, (byte)(x == 0 ? 0x12 : 0x6E)));
+                    AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(4));
                 }
 
-                BMS.OpcodeBase CreateNoteOn(byte NoteID, byte VoiceID, byte VelocityValue) => new BMS.OpcodeNoteOn() { Note = NoteID, Voice = VoiceID, Velocity = VelocityValue };
-                BMS.OpcodeBase CreateNoteOff(byte VoiceID) => new BMS.OpcodeNoteOff() { Voice = VoiceID };
-                void CreateWaitOpcode(int delay) => Dest.Add(new BMS.OpcodeWaitVar() { Value = delay });
+                int EmptyCounter = 0;
+                foreach (var item in AllBeatTicks)
+                {
+                    if (item.Count == 0)
+                    {
+                        EmptyCounter++;
+                        continue;
+                    }
+                    if (EmptyCounter > 0)
+                        CreateWaitOpcode(EmptyCounter);
+
+                    Dest.AddRange(item);
+                    if (EmptyCounter > 0)
+                        CreateWaitOpcode(2); //is it always 2?
+                    EmptyCounter = 0;
+                }
+
+                CurrentTime += PPQN;
             }
+
+            BMS.OpcodeBase CreateNoteOn(byte NoteID, byte VoiceID, byte VelocityValue) => new BMS.OpcodeNoteOn() { Note = NoteID, Voice = VoiceID, Velocity = VelocityValue };
+            BMS.OpcodeBase CreateNoteOff(byte VoiceID) => new BMS.OpcodeNoteOff() { Voice = VoiceID };
+            void CreateWaitOpcode(int delay) => Dest.Add(new BMS.OpcodeWaitVar() { Value = delay });
         }
 
 
