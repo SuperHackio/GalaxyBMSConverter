@@ -291,7 +291,7 @@ public partial class MainForm : Form
 
         // Create & Save BMS
         MIDI CurrentConversionTarget = [];
-        StreamUtil.SetEndianBig();
+        StreamUtil.PushEndianBig();
         if (!MidiLabelTextBoxButtonControl.Text.Equals("_"))
             FileUtil.LoadFile(MidiLabelTextBoxButtonControl.Text, CurrentConversionTarget.Load);
         int PPQN = CurrentConversionTarget.TimeBase; // Defaults to 120, so only generating a timing track will work just fine
@@ -482,7 +482,7 @@ public partial class MainForm : Form
             AddWarning($"The BMS is too large ({NotEncoded.Length} > {MaxSeqDataSize})");
         else
         {
-            byte[] comp = YAZ0.Compress(NotEncoded);
+            byte[] comp = YAZ0.Compress_Official(NotEncoded, null);
             File.WriteAllBytes(BMSSFD.FileName.Replace(".bms", ".szs"), comp);
         }
 
@@ -526,6 +526,8 @@ public partial class MainForm : Form
 
         void GenerateTrack(MIDI.Sequence Source, BMS.Track Dest)
         {
+            // Do not check for empty Source.
+
             //Debug
             List<byte> UsedPercussionNotes = [];
 
@@ -540,7 +542,6 @@ public partial class MainForm : Form
             byte CurrentVolume = 127, CurrentExpression = 127;
             bool HasProcessedLoop = LoopStart == 0 || NoLooping;
             double LastUsedTempo = 0;
-
             foreach (MIDI.Event item in absolute)
             {
                 if (!HasProcessedLoop && item.Position >= LoopStart)
@@ -846,7 +847,7 @@ public partial class MainForm : Form
                 string? ScaleUpNotes = row.Cells[3].Value?.ToString();
                 string? ScaleDownNotes = row.Cells[4].Value?.ToString();
 
-                if (!int.TryParse(TickNum, out int RealTickNum) || BassNote is null || ChordNotes is null || ScaleUpNotes is null || ScaleDownNotes is null)
+                if (!int.TryParse(TickNum, out int RealTickNum) || BassNote is null || ChordNotes is null || ScaleUpNotes is null)
                     continue;
 
                 RealTickNum = ChangeTickPPQN(RealTickNum);
@@ -874,7 +875,9 @@ public partial class MainForm : Form
                 //-------------------------------
 
                 string[] ScaleUpSplit = ScaleUpNotes.Split();
-                string[] ScaleDownSplit = ScaleDownNotes.Split();
+                string[] ScaleDownSplit = ScaleDownNotes?.Split() ?? ScaleUpSplit;
+                if (ScaleDownSplit.Length == 1 && string.IsNullOrEmpty(ScaleDownSplit[0]))
+                    ScaleDownSplit = ScaleUpSplit;
                 int twelve = 12; //lol
                 CIT.Note[] RealScaleUp = new CIT.Note[twelve];
                 CIT.Note[] RealScaleDown = new CIT.Note[twelve];
@@ -951,9 +954,43 @@ public partial class MainForm : Form
 
             foreach ((int Tick, int ChordID, int ScaleID) in Assignments)
             {
+                if (Tick == 0 && CurrentTime == 0)
+                {
+                    WriteSelection(ChordID, ScaleID); // Apparently the program wasn't writing the first chord ever...
+                    continue;
+                }
+
+                bool WroteSelection = false;
                 while (CurrentTime < Tick)
                 {
-                    WriteBeat();
+                    List<BMS.OpcodeBase>[] AllBeatTicks = WriteBeat(); // each array entry is one tick
+
+                    int EmptyCounter = 0;
+                    int offsettick = 0;
+                    foreach (var item in AllBeatTicks)
+                    {
+                        if (CurrentTime + offsettick == Tick)
+                        {
+                            WriteSelection(ChordID, ScaleID);
+                            WroteSelection = true;
+                        }
+                        offsettick++;
+
+                        if (item.Count == 0)
+                        {
+                            EmptyCounter++;
+                            continue;
+                        }
+                        if (EmptyCounter > 0)
+                            CreateWaitOpcode(EmptyCounter);
+
+                        Dest.AddRange(item);
+                        if (EmptyCounter > 0)
+                            CreateWaitOpcode(2); //is it always 2?
+                        EmptyCounter = 0;
+                    }
+
+                    CurrentTime += PPQN;
 
                     if (!HasProcessedLoop && CurrentTime >= LoopStart)
                     {
@@ -964,21 +1001,62 @@ public partial class MainForm : Form
                     if (CurrentTime >= LoopEnd)
                         goto OuterBreak;
                 }
-                WriteSelection(ChordID, ScaleID);
+
+
+                if (!WroteSelection)
+                    WriteSelection(ChordID, ScaleID);
             }
         OuterBreak:
             if (!HasProcessedLoop) //If the loop hasn't been processed by this point.... Guess that there weren't chords assigned past the loop point
             {
                 while (CurrentTime < LoopStart)
                 {
-                    WriteBeat();
+                    List<BMS.OpcodeBase>[] AllBeatTicks = WriteBeat(); // each array entry is one tick
+
+                    int EmptyCounter = 0;
+                    foreach (var item in AllBeatTicks)
+                    {
+                        if (item.Count == 0)
+                        {
+                            EmptyCounter++;
+                            continue;
+                        }
+                        if (EmptyCounter > 0)
+                            CreateWaitOpcode(EmptyCounter);
+
+                        Dest.AddRange(item);
+                        if (EmptyCounter > 0)
+                            CreateWaitOpcode(2); //is it always 2?
+                        EmptyCounter = 0;
+                    }
+
+                    CurrentTime += PPQN;
                 }
                 TargetLoopOpcodeIndex = Dest.Count;
                 HasProcessedLoop = true;
             }
             while (CurrentTime < LoopEnd)
             {
-                WriteBeat();
+                List<BMS.OpcodeBase>[] AllBeatTicks = WriteBeat(); // each array entry is one tick
+
+                int EmptyCounter = 0;
+                foreach (var item in AllBeatTicks)
+                {
+                    if (item.Count == 0)
+                    {
+                        EmptyCounter++;
+                        continue;
+                    }
+                    if (EmptyCounter > 0)
+                        CreateWaitOpcode(EmptyCounter);
+
+                    Dest.AddRange(item);
+                    if (EmptyCounter > 0)
+                        CreateWaitOpcode(2); //is it always 2?
+                    EmptyCounter = 0;
+                }
+
+                CurrentTime += PPQN;
             }
 
             if (!NoLooping)
@@ -997,7 +1075,7 @@ public partial class MainForm : Form
                 Dest.Add(new BMS.OpcodeSetProgram() { Value = (byte)ChordID });
             }
 
-            void WriteBeat()
+            List<BMS.OpcodeBase>[] WriteBeat()
             {
                 List<BMS.OpcodeBase>[] AllBeatTicks = new List<BMS.OpcodeBase>[PPQN];
                 int Voice1Num = 1;
@@ -1032,25 +1110,7 @@ public partial class MainForm : Form
                     AllBeatTicks[idx * x].Add(CreateNoteOn(0x1E, 4, (byte)(x == 0 ? 0x12 : 0x6E)));
                     AllBeatTicks[(idx * (x + 1)) - 1].Add(CreateNoteOff(4));
                 }
-
-                int EmptyCounter = 0;
-                foreach (var item in AllBeatTicks)
-                {
-                    if (item.Count == 0)
-                    {
-                        EmptyCounter++;
-                        continue;
-                    }
-                    if (EmptyCounter > 0)
-                        CreateWaitOpcode(EmptyCounter);
-
-                    Dest.AddRange(item);
-                    if (EmptyCounter > 0)
-                        CreateWaitOpcode(2); //is it always 2?
-                    EmptyCounter = 0;
-                }
-
-                CurrentTime += PPQN;
+                return AllBeatTicks;
             }
 
             BMS.OpcodeBase CreateNoteOn(byte NoteID, byte VoiceID, byte VelocityValue) => new BMS.OpcodeNoteOn() { Note = NoteID, Voice = VoiceID, Velocity = VelocityValue };
